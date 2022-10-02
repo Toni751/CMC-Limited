@@ -1,0 +1,14 @@
+num a = 2;
+num b;
+numArr arr1 = [1, 2, 3];
+charArr arr2 = ['a', 'b', 'c'];
+
+#Comentariu
+define myFunc with num x, num y:
+	if 2 >= 5
+		then show(x);
+		else show(y);
+	done;
+bye;
+
+myFunc(params: 2, 3);
