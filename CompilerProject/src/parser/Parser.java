@@ -14,12 +14,16 @@ public class Parser {
     private Token currentTerminal;
     private final List<TokenKind> statements = new ArrayList<>();
     private final List<TokenKind> types = new ArrayList<>();
+    private final List<TokenKind> values = new ArrayList<>();
+    private final List<TokenKind> readInput = new ArrayList<>();
 
     public Parser(Scanner scan) {
         this.scan = scan;
         currentTerminal = scan.scan();
         initializeStatements();
         initializeTypes();
+        initializeValues();
+        initializeReadInput();
     }
 
     private void initializeStatements() {
@@ -33,6 +37,17 @@ public class Parser {
         types.add(NUM_ARR);
         types.add(CHAR);
         types.add(CHAR_ARR);
+    }
+
+    private void initializeValues() {
+        values.add(IDENTIFIER);
+        values.add(NUMBER);
+        values.add(CHARACTER);
+    }
+
+    private void initializeReadInput() {
+        readInput.add(READ_NUM);
+        readInput.add(READ_CHAR);
     }
 
     public void parseProgram() {
@@ -131,74 +146,33 @@ public class Parser {
     }
 
     private void parseComparison() {
-        switch (currentTerminal.kind) {
-            case NUM_IDENTIFIER:
-                parseNumIdentifierComparison();
-                break;
-            case CHAR_IDENTIFIER:
-                parseCharIdentifierComparison();
-                break;
-            default:
-                System.out.println("Expected num or char identifier, but found " + currentTerminal.kind);
-        }
-    }
-
-    private void parseNumIdentifierComparison() {
-        accept(NUM_IDENTIFIER);
-        if (currentTerminal.kind == NUM_OPERATOR) {
-            accept(NUM_OPERATOR);
-            accept(NUM_IDENTIFIER);
-            accept(COMPARATOR);
-            accept(NUM_IDENTIFIER);
-            handleNumOperationOrThen();
-        } else if (currentTerminal.kind == COMPARATOR) {
-            accept(COMPARATOR);
-            accept(NUM_IDENTIFIER);
-            handleNumOperationOrThen();
+        if (values.contains(currentTerminal.kind)) {
+            parseIdentifierComparison();
         } else {
-            System.out.println("Expected comparison but found " + currentTerminal.kind);
+            System.out.println("Expected num or char identifier, but found " + currentTerminal.kind);
         }
     }
 
-    private void handleNumOperationOrThen() {
+    private void parseIdentifierComparison() {
+        accept(values);
+
+        if (currentTerminal.kind == OPERATOR) {
+            accept(OPERATOR);
+            accept(values);
+        }
+
+        accept(COMPARATOR);
+        accept(values);
+        handleOperationOrThen();
+    }
+
+    private void handleOperationOrThen() {
         if (currentTerminal.kind == THEN) {
             return;
         }
-        if (currentTerminal.kind == NUM_OPERATOR) {
-            accept(NUM_OPERATOR);
-            accept(NUM_IDENTIFIER);
-        } else {
-            System.out.println("Expected then or num operator, but found " + currentTerminal.kind);
-        }
-    }
 
-    private void parseCharIdentifierComparison() {
-        accept(CHAR_IDENTIFIER);
-        if (currentTerminal.kind == MERGE) {
-            accept(MERGE);
-            accept(CHAR_IDENTIFIER);
-            accept(COMPARATOR);
-            accept(CHAR_IDENTIFIER);
-            handleCharOperationOrThen();
-        } else if (currentTerminal.kind == COMPARATOR) {
-            accept(COMPARATOR);
-            accept(CHAR_IDENTIFIER);
-            handleCharOperationOrThen();
-        } else {
-            System.out.println("Expected comparison but found " + currentTerminal.kind);
-        }
-    }
-
-    private void handleCharOperationOrThen() {
-        if (currentTerminal.kind == THEN) {
-            return;
-        }
-        if (currentTerminal.kind == MERGE) {
-            accept(MERGE);
-            accept(CHAR_IDENTIFIER);
-        } else {
-            System.out.println("Expected then or num operator, but found " + currentTerminal.kind);
-        }
+        accept(OPERATOR);
+        accept(values);
     }
 
     private void parseDo() {
@@ -221,59 +195,57 @@ public class Parser {
         accept(LEFT_PARAN);
         accept(PARAMS);
         accept(COLON);
-        if (currentTerminal.kind == NUM_IDENTIFIER || currentTerminal.kind == CHAR_IDENTIFIER) {
-            parseIdentifierList();
+        if (values.contains(currentTerminal.kind)) {
+            parseValueList();
         }
         accept(RIGHT_PARAN);
         accept(SEMICOLON);
     }
 
-    private void parseIdentifierList() {
-        accept(currentTerminal.kind);
+    private void parseValueList() {
+        accept(values);
         while (currentTerminal.kind == COMMA) {
             accept(COMMA);
-            if (currentTerminal.kind == NUM_IDENTIFIER || currentTerminal.kind == CHAR_IDENTIFIER) {
-                accept(currentTerminal.kind);
-            } else {
-                System.out.println("Expected identifier but found " + currentTerminal.kind);
-            }
+            accept(values);
         }
     }
 
     private void parseDeclaration() {
         if (types.contains(currentTerminal.kind)) {
-            if (currentTerminal.kind == CHAR_ARR) {
+            TokenKind currentVariableType = currentTerminal.kind;
+            accept(types);
+            accept(IDENTIFIER);
+            if (currentTerminal.kind == SEMICOLON) {
+                accept(SEMICOLON);
+                return;
+            }
+            accept(ASSIGNMENT);
+            if (currentVariableType == CHAR_ARR) {
                 parseCharArrDeclaration();
-            } else if (currentTerminal.kind == NUM_ARR) {
+            } else if (currentVariableType == NUM_ARR) {
                 parseNumArrDeclaration();
             } else {
-                accept(currentTerminal.kind);
-                accept(IDENTIFIER);
-                if (currentTerminal.kind == ASSIGNMENT) {
-                    parseAssignment();
-                }
+                parseAssignment();
             }
-            accept(SEMICOLON);
-        } else if (currentTerminal.kind == ASSIGNMENT) {
-            parseAssignment();
-            accept(SEMICOLON);
         } else {
-            System.out.println("Expected declaration/assignment but found " + currentTerminal.kind);
+            accept(ASSIGNMENT);
+            parseAssignment();
         }
+        accept(SEMICOLON);
     }
 
     private void parseNumArrDeclaration() {
-        parseArray();
-        accept(NUM_IDENTIFIER);
+        accept(LEFT_SQUARE_PARAN);
+        accept(NUMBER);
         while (currentTerminal.kind == COMMA) {
             accept(COMMA);
-            accept(NUM_IDENTIFIER);
+            accept(NUMBER);
         }
         accept(RIGHT_SQUARE_PARAN);
     }
 
     private void parseCharArrDeclaration() {
-        parseArray();
+        accept(LEFT_SQUARE_PARAN);
         parseChar();
         while (currentTerminal.kind == COMMA) {
             accept(COMMA);
@@ -282,29 +254,23 @@ public class Parser {
         accept(RIGHT_SQUARE_PARAN);
     }
 
-    private void parseArray() {
-        accept(currentTerminal.kind);
-        accept(IDENTIFIER);
-        accept(ASSIGNMENT);
-        accept(LEFT_SQUARE_PARAN);
-    }
-
     private void parseChar() {
         accept(QUOTE);
-        accept(CHAR_IDENTIFIER);
+        accept(CHARACTER);
         accept(QUOTE);
     }
 
     private void parseAssignment() {
-        accept(ASSIGNMENT);
-        if (currentTerminal.kind == NUM_IDENTIFIER || currentTerminal.kind == CHAR_IDENTIFIER) {
-            accept(currentTerminal.kind);
-        } else if (currentTerminal.kind == READ_CHAR || currentTerminal.kind == READ_NUM) {
-            accept(currentTerminal.kind);
+        if (values.contains(currentTerminal.kind)) {
+            accept(values);
+            if (currentTerminal.kind != SEMICOLON) {
+                accept(OPERATOR);
+                accept(values);
+            }
+        } else {
+            accept(readInput);
             accept(LEFT_PARAN);
             accept(RIGHT_PARAN);
-        } else {
-            System.out.println("Expected an identifier or readChar/readNum but found " + currentTerminal.kind);
         }
     }
 
@@ -313,6 +279,14 @@ public class Parser {
             currentTerminal = scan.scan();
         } else {
             System.out.println("Expected token of kind " + expected + ", but found " + currentTerminal.kind);
+        }
+    }
+
+    private void accept(List<TokenKind> expected) {
+        if (expected.contains(currentTerminal.kind)) {
+            currentTerminal = scan.scan();
+        } else {
+            System.out.println("Expected token of any kind of " + expected + ", but found " + currentTerminal.kind);
         }
     }
 }

@@ -50,22 +50,21 @@ public class Scanner {
     private TokenKind scanToken() {
         if ((isLetter(currentChar) || isDigit(currentChar)) && isQuoteOpen) {
             takeIt();
-//            if (currentChar != '\'') {
-//                return ERROR;
-//            }
-            return CHAR_IDENTIFIER;
+            return CHARACTER;
         } else if (isLetter(currentChar)) {
             takeIt();
-            while (isLetter(currentChar) || isDigit(currentChar))
+            while (isLetter(currentChar) || isDigit(currentChar)) {
                 takeIt();
+            }
 
             return IDENTIFIER;
         } else if (isDigit(currentChar)) {
             takeIt();
-            while (isDigit(currentChar))
+            while (isDigit(currentChar)) {
                 takeIt();
+            }
 
-            return NUM_IDENTIFIER;
+            return NUMBER;
         }
 
         switch (currentChar) {
@@ -97,7 +96,7 @@ public class Scanner {
             case '+':
             case '-':
                 takeIt();
-                return NUM_OPERATOR;
+                return OPERATOR;
             case ':':
                 takeIt();
                     return COLON;

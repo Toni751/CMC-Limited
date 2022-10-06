@@ -5,7 +5,7 @@ import static scanner.TokenKind.*;
 public class Token {
     public TokenKind kind;
     public String spelling;
-    private static final TokenKind[] KEYWORDS = {DEFINE, DO, ELSE, WITH, BYE, IF, THEN, DONE, UNTIL, MERGE, NUM, CHAR, NUM_ARR, CHAR_ARR, SHOW, READ_CHAR, READ_NUM, PARAMS};
+    private static final TokenKind[] KEYWORDS = {DEFINE, DO, ELSE, WITH, BYE, IF, THEN, DONE, UNTIL, NUM, CHAR, NUM_ARR, CHAR_ARR, SHOW, READ_CHAR, READ_NUM, PARAMS};
 
     public Token(TokenKind kind, String spelling) {
         this.kind = kind;

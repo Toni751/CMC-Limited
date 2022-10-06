@@ -2,10 +2,10 @@ package scanner;
 
 public enum TokenKind {
     IDENTIFIER,
-    NUM_IDENTIFIER,
-    CHAR_IDENTIFIER,
+    NUMBER,
+    CHARACTER,
     ASSIGNMENT,
-    NUM_OPERATOR,
+    OPERATOR,
     COMPARATOR,
 
     DEFINE("define"),
@@ -17,7 +17,6 @@ public enum TokenKind {
     THEN("then"),
     DONE("done"),
     UNTIL("until"),
-    MERGE("merge"),
     NUM("num"),
     CHAR("char"),
     NUM_ARR("numArr"),
