@@ -16,7 +16,7 @@ import javax.swing.*;
 
 public class TestDriverAST
 {
-	private static final String EXAMPLES_DIR = "C:\\Users\\Ana-Maria\\IdeaProjects\\CMC-Limited\\CompilerProject\\src\\examples\\ex1.txt";
+	private static final String EXAMPLES_DIR = "C:\\Users\\anton\\IdeaProjects\\CMC-Limited\\CompilerProject\\src\\examples\\ex1.txt";
 	
 	
 	public static void main( String args[] )
@@ -28,7 +28,7 @@ public class TestDriverAST
 			Scanner s = new Scanner(in);
 			ParserAST p = new ParserAST(s);
 			AST ast = p.parseProgram();
-			// new ASTViewer(ast);
+			new ASTViewer(ast);
 		}
 	}
 }

@@ -5,18 +5,14 @@
  * 21.10.2009 New folder structure
  * 01.10.2006 Original version
  */
- 
+
 package ast.ast;
 
 
-public class VarExpression
-	extends Expression
-{
-	public Identifier name;
-	
-	
-	public VarExpression( Identifier name )
-	{
-		this.name = name;
-	}
+public class VarValue extends Value {
+    public Identifier name;
+
+    public VarValue(Identifier name) {
+        this.name = name;
+    }
 }

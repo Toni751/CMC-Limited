@@ -8,7 +8,7 @@
 package ast.ast;
 
 
-public class Variable
+public class Variable extends AST
 {
 	public Identifier id;
 	public Type type;

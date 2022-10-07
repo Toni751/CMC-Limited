@@ -7,7 +7,6 @@
 package ast.ast;
 
 
-public abstract class Declaration
-	extends AST
-{
+public abstract class Declaration extends BlockItem {
+    public Identifier identifier;
 }

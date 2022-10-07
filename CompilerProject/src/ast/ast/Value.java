@@ -8,7 +8,6 @@
 package ast.ast;
 
 
-public abstract class Expression
-	extends AST
+public abstract class Value extends AST
 {
 }

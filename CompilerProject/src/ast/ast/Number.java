@@ -8,11 +8,9 @@
 package ast.ast;
 
 
-public class IntegerLiteral
-	extends Terminal
-{
-	public IntegerLiteral( String spelling )
-	{
+public class Number extends Terminal {
+
+	public Number(String spelling) {
 		this.spelling = spelling;
 	}
 }

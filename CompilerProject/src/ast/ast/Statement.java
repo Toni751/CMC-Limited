@@ -7,7 +7,5 @@
 package ast.ast;
 
 
-public abstract class Statement
-	extends BlockItem
-{
+public abstract class Statement extends BlockItem {
 }

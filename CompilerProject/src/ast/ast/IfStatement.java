@@ -8,16 +8,12 @@
 package ast.ast;
 
 
-public class IfStatement
-	extends Statement
-{
+public class IfStatement extends Statement {
 	public Comparison cmpr;
 	public Block thenBlock;
 	public Block elseBlock;
 	
-	
-	public IfStatement( Comparison cmpr, Block thenBlock, Block elseBlock )
-	{
+	public IfStatement(Comparison cmpr, Block thenBlock, Block elseBlock) {
 		this.cmpr = cmpr;
 		this.thenBlock = thenBlock;
 		this.elseBlock = elseBlock;

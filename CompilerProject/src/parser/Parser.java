@@ -68,7 +68,9 @@ public class Parser {
         accept(WITH);
         parseVarList();
         accept(COLON);
-        parseBlock(BYE);
+        while (currentTerminal.kind != BYE && currentTerminal.kind != EOT) {
+            parseBlockItem();
+        }
         accept(BYE);
         accept(SEMICOLON);
     }
@@ -90,18 +92,6 @@ public class Parser {
             accept(IDENTIFIER);
         } else {
             System.out.println("Expected num, char or array but found " + currentTerminal.kind);
-        }
-    }
-
-    private void parseBlock(TokenKind terminator) {
-        while (terminator != currentTerminal.kind && currentTerminal.kind != EOT) {
-            parseBlockItem();
-        }
-    }
-
-    private void parseBlock(List<TokenKind> terminators) {
-        while (!terminators.contains(currentTerminal.kind) && currentTerminal.kind != EOT) {
-            parseBlockItem();
         }
     }
 
@@ -148,14 +138,13 @@ public class Parser {
         accept(IF);
         parseComparison();
         accept(THEN);
-        List<TokenKind> terminators = new ArrayList<>();
-        terminators.add(ELSE);
-        terminators.add(DONE);
-        parseBlock(terminators);
+        while (currentTerminal.kind != ELSE && currentTerminal.kind != DONE && currentTerminal.kind != EOT) {
+            parseBlockItem();
+        }
         if (currentTerminal.kind == ELSE) {
             accept(ELSE);
-            while (currentTerminal.kind != DONE) {
-                parseBlock(DONE);
+            while (currentTerminal.kind != DONE && currentTerminal.kind != EOT) {
+                parseBlockItem();
             }
         }
         accept(DONE);
@@ -194,7 +183,9 @@ public class Parser {
 
     private void parseDo() {
         accept(DO);
-        parseBlock(UNTIL);
+        while (currentTerminal.kind != UNTIL && currentTerminal.kind != EOT) {
+            parseBlockItem();
+        }
         accept(UNTIL);
         parseComparison();
         accept(SEMICOLON);

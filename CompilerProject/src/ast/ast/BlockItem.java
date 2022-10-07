@@ -1,4 +1,4 @@
 package ast.ast;
 
-public class BlockItem{
+public abstract class BlockItem extends AST{
 }

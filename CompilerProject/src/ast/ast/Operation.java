@@ -8,16 +8,12 @@
 package ast.ast;
 
 
-public class BinaryExpression
-	extends Expression
-{
+public class Operation extends Value {
 	public Operator operator;
-	public Expression operand1;
-	public Expression operand2;
+	public Value operand1;
+	public Value operand2;
 	
-	
-	public BinaryExpression( Operator operator, Expression operand1, Expression operand2 )
-	{
+	public Operation(Operator operator, Value operand1, Value operand2) {
 		this.operator = operator;
 		this.operand1 = operand1;
 		this.operand2 = operand2;

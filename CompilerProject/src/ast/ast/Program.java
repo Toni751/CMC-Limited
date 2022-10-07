@@ -11,9 +11,9 @@ import java.util.List;
 
 public class Program extends AST {
 	public Block block;
-	public List<Function> functions;
+	public List<FunctionDeclaration> functions;
 	
-	public Program(Block block, List<Function> functions) {
+	public Program(Block block, List<FunctionDeclaration> functions) {
 		this.block = block;
 		this.functions = functions;
 	}

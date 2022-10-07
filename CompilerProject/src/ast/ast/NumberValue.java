@@ -8,9 +8,10 @@
 package ast.ast;
 
 
-public class Operator extends Terminal {
-
-	public Operator(String spelling) {
-		this.spelling = spelling;
+public class NumberValue extends Value {
+	public Number number;
+	
+	public NumberValue(Number number) {
+		this.number = number;
 	}
 }
