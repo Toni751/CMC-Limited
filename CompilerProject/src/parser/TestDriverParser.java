@@ -6,7 +6,7 @@ import scanner.SourceFile;
 import javax.swing.*;
 
 public class TestDriverParser {
-    private static final String EXAMPLES_DIR = "C:\\Users\\anton\\IdeaProjects\\CMC-Limited\\CompilerProject\\src\\examples\\ex1.txt";
+    private static final String EXAMPLES_DIR = "C:\\Users\\Ana-Maria\\IdeaProjects\\CMC-Limited\\CompilerProject\\src\\examples\\ex1.txt";
 
     public static void main(String args[]) {
         JFileChooser fc = new JFileChooser(EXAMPLES_DIR);

@@ -1,5 +1,6 @@
-package parser;
+package ast;
 
+import ast.ast.*;
 import scanner.Scanner;
 import scanner.Token;
 import scanner.TokenKind;
@@ -8,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static scanner.TokenKind.*;
+import static scanner.TokenKind.RIGHT_PARAN;
 
-public class Parser {
+public class ParserAST {
     private Scanner scan;
     private Token currentTerminal;
     private final List<TokenKind> statements = new ArrayList<>();
@@ -17,7 +19,7 @@ public class Parser {
     private final List<TokenKind> values = new ArrayList<>();
     private final List<TokenKind> readInput = new ArrayList<>();
 
-    public Parser(Scanner scan) {
+    public ParserAST(Scanner scan) {
         this.scan = scan;
         currentTerminal = scan.scan();
         initializeStatements();
@@ -50,62 +52,97 @@ public class Parser {
         readInput.add(READ_CHAR);
     }
 
-    public void parseProgram() {
+    public Program parseProgram() {
+        List<Function> functions = new ArrayList<>();
+        Block block = new Block();
         while (currentTerminal.kind != EOT) {
             switch (currentTerminal.kind) {
                 case DEFINE:
-                    parseFunction();
+                    functions.add(parseFunction());
                     break;
                 default:
                     parseBlockItem();
             }
         }
+
+        return new Program(block, functions);
     }
 
-    private void parseFunction() {
+    private Function parseFunction() {
         accept(DEFINE);
-        accept(IDENTIFIER);
+        Identifier identifier = parseIdentifier();
         accept(WITH);
-        parseVarList();
+        VariableList variableList = parseVarList();
         accept(COLON);
-        parseBlock(BYE);
+        Block block = parseBlock(BYE);
         accept(BYE);
         accept(SEMICOLON);
+        return new Function(identifier, variableList, block);
     }
 
-    private void parseVarList() {
-        if (currentTerminal.kind == COLON) {
-            return;
+    private Identifier parseIdentifier() {
+        if (currentTerminal.kind == IDENTIFIER) {
+            Identifier res = new Identifier( currentTerminal.spelling );
+            currentTerminal = scan.scan();
+            return res;
         }
-        parseVar();
+
+        return new Identifier( "???" );
+    }
+
+    private VariableList parseVarList() {
+        VariableList variableList = new VariableList();
+        if (currentTerminal.kind == COLON) {
+            return variableList;
+        }
+
+        variableList.variables.add(parseVar());
         while (currentTerminal.kind == COMMA) {
             accept(COMMA);
-            parseVar();
+            variableList.variables.add(parseVar());
         }
+
+        return variableList;
     }
 
-    private void parseVar() {
+    private Variable parseVar() {
         if (types.contains(currentTerminal.kind)) {
-            accept(currentTerminal.kind);
-            accept(IDENTIFIER);
-        } else {
-            System.out.println("Expected num, char or array but found " + currentTerminal.kind);
+            Type type = parseType();
+            Identifier identifier = parseIdentifier();
+            return new Variable(type, identifier);
         }
+        System.out.println("Expected num, char or array but found " + currentTerminal.kind);
+        return null;
     }
 
-    private void parseBlock(TokenKind terminator) {
+    private Type parseType() {
+        if (types.contains(currentTerminal.kind)) {
+            Type type = new Type(currentTerminal.spelling);
+            currentTerminal = scan.scan();
+            return type;
+        }
+
+        return new Type("???");
+    }
+
+    private Block parseBlock(TokenKind terminator) {
+        Block block = new Block();
         while (terminator != currentTerminal.kind && currentTerminal.kind != EOT) {
-            parseBlockItem();
+            block.blockItems.add(parseBlockItem());
         }
+        return block;
     }
 
-    private void parseBlock(List<TokenKind> terminators) {
+    private Block parseBlock(List<TokenKind> terminators) {
+        Block block = new Block();
         while (!terminators.contains(currentTerminal.kind) && currentTerminal.kind != EOT) {
-            parseBlockItem();
+            block.blockItems.add(parseBlockItem());
         }
+        return block;
     }
 
-    private void parseBlockItem() {
+    private BlockItem parseBlockItem() {
+        BlockItem blockItem = new BlockItem();
         if (statements.contains(currentTerminal.kind)) {
             parseStatement();
         } else if (types.contains(currentTerminal.kind)) {
@@ -122,6 +159,7 @@ public class Parser {
         } else {
             System.out.println("Expected a valid block function but found " + currentTerminal.kind);
         }
+        return blockItem;
     }
 
     private void parseStatement() {
@@ -145,17 +183,19 @@ public class Parser {
     }
 
     private void parseIf() {
+        Block thenBlock = new Block();
+        Block elseBlock = new Block();
         accept(IF);
         parseComparison();
         accept(THEN);
         List<TokenKind> terminators = new ArrayList<>();
         terminators.add(ELSE);
         terminators.add(DONE);
-        parseBlock(terminators);
+        thenBlock = parseBlock(terminators);
         if (currentTerminal.kind == ELSE) {
             accept(ELSE);
             while (currentTerminal.kind != DONE) {
-                parseBlock(DONE);
+                elseBlock = parseBlock(DONE);
             }
         }
         accept(DONE);
@@ -165,6 +205,7 @@ public class Parser {
     private void parseComparison() {
         if (values.contains(currentTerminal.kind)) {
             parseIdentifierComparison();
+//            return new Comparison();
         } else {
             System.out.println("Expected num or char identifier, but found " + currentTerminal.kind);
         }
@@ -194,7 +235,7 @@ public class Parser {
 
     private void parseDo() {
         accept(DO);
-        parseBlock(UNTIL);
+        parseBlock();
         accept(UNTIL);
         parseComparison();
         accept(SEMICOLON);
@@ -241,8 +282,6 @@ public class Parser {
                 parseCharArrDeclaration();
             } else if (currentVariableType == NUM_ARR) {
                 parseNumArrDeclaration();
-            } else if (currentVariableType == CHAR) {
-                parseChar();
             } else {
                 parseAssignment();
             }

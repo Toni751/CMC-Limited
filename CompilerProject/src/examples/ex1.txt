@@ -9,6 +9,11 @@ define myFunc with num x, num y:
 		then show(x);
 		else show(y);
 	done;
+	show(x);
+	num t = 5;
+	t = t + 5;
+	char n = 'a';
+	t = t + n;
 bye;
 
 myFunc(params: 2, 3);
