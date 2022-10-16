@@ -8,6 +8,8 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,5 +18,10 @@ public class Block extends AST {
 
 	public Block() {
 		blockItems = new ArrayList<>();
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitBlock(this, arg);
 	}
 }

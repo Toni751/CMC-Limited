@@ -8,10 +8,17 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class ShowStatement extends Statement {
 	public Identifier value;
 
 	public ShowStatement(Identifier value) {
 		this.value = value;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitShowStatement(this, arg);
 	}
 }

@@ -9,6 +9,8 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class FunctionCall extends Statement {
 	public Identifier identifier;
 	public ValueList valueList;
@@ -16,5 +18,10 @@ public class FunctionCall extends Statement {
 	public FunctionCall(Identifier identifier, ValueList valueList) {
 		this.identifier = identifier;
 		this.valueList = valueList;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitFunctionCall(this, arg);
 	}
 }

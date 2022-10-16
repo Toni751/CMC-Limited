@@ -1,8 +1,17 @@
 package ast.ast;
 
-public class ReadNumDeclaration extends Declaration {
+import checker.Visitor;
 
-    public ReadNumDeclaration(Identifier identifier) {
+public class ReadNumDeclaration extends Declaration {
+    public Type type;
+
+    public ReadNumDeclaration(Identifier identifier, Type type) {
         this.identifier = identifier;
+        this.type = type;
+    }
+
+    @Override
+    public Object visit(Visitor v, Object arg) {
+        return v.visitReadNumDeclaration(this, arg);
     }
 }

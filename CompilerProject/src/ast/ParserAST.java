@@ -312,7 +312,7 @@ public class ParserAST {
             } else if (values.contains(currentTerminal.kind)) {
                 declaration = new VariableInitialization(currentVariableType, parseValue(), identifier1);
             } else {
-                declaration = parseReadDeclaration(identifier1);
+                declaration = parseReadDeclaration(currentVariableType, identifier1);
             }
         } else {
             accept(ASSIGNMENT);
@@ -326,19 +326,19 @@ public class ParserAST {
             } else if (values.contains(currentTerminal.kind)) {
                 declaration = new VariableInitialization(parseValue(), identifier);
             } else {
-                declaration = parseReadDeclaration(identifier);
+                declaration = parseReadDeclaration(null, identifier);
             }
         }
         accept(SEMICOLON);
         return declaration;
     }
 
-    private Declaration parseReadDeclaration(Identifier identifier1) {
+    private Declaration parseReadDeclaration(Type type, Identifier identifier1) {
         Declaration declaration = null;
-        if (currentTerminal.kind == READ_CHAR) {
-            declaration = new ReadCharDeclaration(identifier1);
-        } else if (currentTerminal.kind == READ_NUM) {
-            declaration = new ReadNumDeclaration(identifier1);
+        if (currentTerminal.kind == READ_CHAR && (type == null || type.spelling.equals(CHAR.getSpelling()))) {
+            declaration = new ReadCharDeclaration(identifier1, type);
+        } else if (currentTerminal.kind == READ_NUM && (type == null || type.spelling.equals(NUM.getSpelling()))) {
+            declaration = new ReadNumDeclaration(identifier1, type);
         }
         currentTerminal = scan.scan();
         accept(LEFT_PARAN);

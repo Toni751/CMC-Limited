@@ -8,6 +8,8 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class IfStatement extends Statement {
 	public Comparison cmpr;
 	public Block thenBlock;
@@ -17,5 +19,10 @@ public class IfStatement extends Statement {
 		this.cmpr = cmpr;
 		this.thenBlock = thenBlock;
 		this.elseBlock = elseBlock;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitIfStatement(this, arg);
 	}
 }

@@ -8,10 +8,17 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class NumberValue extends Value {
 	public Number number;
 	
 	public NumberValue(Number number) {
 		this.number = number;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitNumberValue(this, arg);
 	}
 }

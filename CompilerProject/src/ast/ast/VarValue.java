@@ -9,10 +9,17 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class VarValue extends Value {
     public Identifier name;
 
     public VarValue(Identifier name) {
         this.name = name;
+    }
+
+    @Override
+    public Object visit(Visitor v, Object arg) {
+        return v.visitVarValue(this, arg);
     }
 }

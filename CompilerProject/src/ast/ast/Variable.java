@@ -8,6 +8,8 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class Variable extends AST
 {
 	public Identifier id;
@@ -17,5 +19,10 @@ public class Variable extends AST
 	{
 		this.type = type;
 		this.id = id;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitVariable(this, arg);
 	}
 }

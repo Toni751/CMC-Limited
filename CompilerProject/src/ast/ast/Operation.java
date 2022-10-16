@@ -8,6 +8,8 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class Operation extends Value {
 	public Operator operator;
 	public Value operand1;
@@ -17,5 +19,10 @@ public class Operation extends Value {
 		this.operator = operator;
 		this.operand1 = operand1;
 		this.operand2 = operand2;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitOperation(this, arg);
 	}
 }

@@ -7,6 +7,8 @@
  
 package ast.ast;
 
+import checker.Visitor;
+
 import java.util.List;
 
 public class Program extends AST {
@@ -16,5 +18,10 @@ public class Program extends AST {
 	public Program(Block block, List<FunctionDeclaration> functions) {
 		this.block = block;
 		this.functions = functions;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitProgram(this, arg);
 	}
 }

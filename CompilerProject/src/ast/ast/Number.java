@@ -8,9 +8,16 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class Number extends Terminal {
 
 	public Number(String spelling) {
 		this.spelling = spelling;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitNumber(this, arg);
 	}
 }

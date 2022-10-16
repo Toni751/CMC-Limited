@@ -1,5 +1,7 @@
 package ast.ast;
 
+import checker.Visitor;
+
 public class VariableInitialization extends Declaration {
     public Type type;
     public Value value;
@@ -25,5 +27,10 @@ public class VariableInitialization extends Declaration {
     public VariableInitialization(ValueList valueList, Identifier identifier) {
         this.valueList = valueList;
         this.identifier = identifier;
+    }
+
+    @Override
+    public Object visit(Visitor v, Object arg) {
+        return v.visitVariableInitialization(this, arg);
     }
 }

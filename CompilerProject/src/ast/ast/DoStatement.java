@@ -8,6 +8,8 @@
 package ast.ast;
 
 
+import checker.Visitor;
+
 public class DoStatement extends Statement {
 	public Block block;
 	public Comparison comparison;
@@ -15,5 +17,10 @@ public class DoStatement extends Statement {
 	public DoStatement(Block block, Comparison comparison) {
 		this.block = block;
 		this.comparison = comparison;
+	}
+
+	@Override
+	public Object visit(Visitor v, Object arg) {
+		return v.visitDoStatement(this, arg);
 	}
 }

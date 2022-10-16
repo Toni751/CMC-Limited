@@ -22,7 +22,7 @@ public class TestDriverAST
 	public static void main( String args[] )
 	{
 		JFileChooser fc = new JFileChooser( EXAMPLES_DIR );
-		
+
 		if( fc.showOpenDialog( null ) == fc.APPROVE_OPTION ) {
 			SourceFile in = new SourceFile(fc.getSelectedFile().getAbsolutePath());
 			Scanner s = new Scanner(in);

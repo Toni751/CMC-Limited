@@ -1,5 +1,7 @@
 package ast.ast;
 
+import checker.Visitor;
+
 public class Comparison extends AST {
     public Comparator comparator;
     public Value operand1;
@@ -9,5 +11,10 @@ public class Comparison extends AST {
         this.comparator = comparator;
         this.operand1 = operand1;
         this.operand2 = operand2;
+    }
+
+    @Override
+    public Object visit(Visitor v, Object arg) {
+        return v.visitComparison(this, arg);
     }
 }
