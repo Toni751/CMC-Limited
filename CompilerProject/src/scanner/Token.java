@@ -20,50 +20,30 @@ public class Token {
         }
     }
 
-//    public boolean isAssignOperator() {
-//        if (kind == ASSIGNMENT)
-//            return containsOperator(spelling, ASSIGNOPS);
-//        else
-//            return false;
-//    }
-//
-//    public boolean isAddOperator() {
-//        if (kind == NUM_OPERATOR)
-//            return containsOperator(spelling, ADDOPS);
-//        else
-//            return false;
-//    }
-//
-//    public boolean isMulOperator() {
-//        if (kind == NUM_OPERATOR)
-//            return containsOperator(spelling, MULOPS);
-//        else
-//            return false;
-//    }
-//
-//
-//    private boolean containsOperator(String spelling, String OPS[]) {
-//        for (int i = 0; i < OPS.length; ++i)
-//            if (spelling.equals(OPS[i]))
-//                return true;
-//
-//        return false;
-//    }
-//    private static final String[] ASSIGNOPS =
-//            {
-//                    "=",
-//            };
-//
-//    private static final String[] ADDOPS =
-//            {
-//                    "+",
-//                    "-",
-//            };
-//
-//    private static final String[] MULOPS =
-//            {
-//                    "*",
-//                    "/",
-//                    "%",
-//            };
+    public boolean isAddOperator() {
+        if (kind == OPERATOR)
+            return containsOperator(spelling, ADDOPS);
+        else
+            return false;
+    }
+
+    public boolean isMulOperator() {
+        if (kind == OPERATOR)
+            return containsOperator(spelling, MULOPS);
+        else
+            return false;
+    }
+
+
+    private boolean containsOperator(String spelling, String OPS[]) {
+        for (int i = 0; i < OPS.length; ++i)
+            if (spelling.equals(OPS[i]))
+                return true;
+
+        return false;
+    }
+
+    private static final String[] ADDOPS = {"+", "-"};
+
+    private static final String[] MULOPS = {"*", "/"};
 }

@@ -95,6 +95,8 @@ public class Scanner {
                 return COMPARATOR;
             case '+':
             case '-':
+            case '*':
+            case '/':
                 takeIt();
                 return OPERATOR;
             case ':':
