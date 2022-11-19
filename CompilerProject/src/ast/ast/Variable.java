@@ -9,11 +9,14 @@ package ast.ast;
 
 
 import checker.Visitor;
+import compiler.Address;
 
 public class Variable extends AST
 {
 	public Identifier id;
 	public Type type;
+
+	public Address address;
 
 	public Variable(Type type, Identifier id )
 	{

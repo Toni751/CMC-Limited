@@ -13,6 +13,7 @@ import checker.Visitor;
 
 public class VarValue extends Value {
     public Identifier name;
+    public Declaration declaration;
 
     public VarValue(Identifier name) {
         this.name = name;

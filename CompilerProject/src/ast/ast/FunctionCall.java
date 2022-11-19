@@ -14,6 +14,7 @@ import checker.Visitor;
 public class FunctionCall extends Statement {
 	public Identifier identifier;
 	public ValueList valueList;
+	public FunctionDeclaration declaration;
 
 	public FunctionCall(Identifier identifier, ValueList valueList) {
 		this.identifier = identifier;

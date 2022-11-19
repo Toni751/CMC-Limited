@@ -26,7 +26,7 @@ public class TestDriverAST
 		if( fc.showOpenDialog( null ) == fc.APPROVE_OPTION ) {
 			SourceFile in = new SourceFile(fc.getSelectedFile().getAbsolutePath());
 			Scanner s = new Scanner(in);
-			ParserAST p = new ParserAST(s);
+			ParserOperatorPrecedence p = new ParserOperatorPrecedence(s);
 			AST ast = p.parseProgram();
 			new ASTViewer(ast);
 		}

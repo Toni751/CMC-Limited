@@ -11,9 +11,9 @@ package ast.ast;
 import checker.Visitor;
 
 public class ShowStatement extends Statement {
-	public Identifier value;
+	public VarValue value;
 
-	public ShowStatement(Identifier value) {
+	public ShowStatement(VarValue value) {
 		this.value = value;
 	}
 

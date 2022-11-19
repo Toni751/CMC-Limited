@@ -130,6 +130,7 @@ public class Checker implements Visitor {
         }
 
         FunctionDeclaration fd = (FunctionDeclaration) retrieve;
+        f.declaration = fd;
         List<Object> values = (List<Object>) f.valueList.visit(this, null);
         List<Variable> variables = fd.varList.variables;
         if (variables.size() != values.size()) {
@@ -380,7 +381,9 @@ public class Checker implements Visitor {
     @Override
     public Object visitVarValue(VarValue v, Object arg) {
         String id = (String) v.name.visit(this, null);
-        return getVarValueIdentifierDeclaration(id);
+        Declaration declaration = (Declaration) getVarValueIdentifierDeclaration(id);
+        v.declaration = declaration;
+        return declaration;
     }
 
     private Object getVarValueIdentifierDeclaration(String id) {

@@ -220,7 +220,7 @@ public class ParserOperatorPrecedence {
         Identifier identifier = parseIdentifier();
         accept(RIGHT_PARAN);
         accept(SEMICOLON);
-        return new ShowStatement(identifier);
+        return new ShowStatement(new VarValue(identifier));
     }
 
     private FunctionCall parseFunctionCall(Identifier identifier) {
@@ -248,13 +248,35 @@ public class ParserOperatorPrecedence {
 
     private Value parseValue() {
         Value value = parseSingleTermValue();
-
-        while (currentTerminal.kind == OPERATOR) {
-            Operator operator = parseOperator();
-            Value value2 = parseSingleTermValue();
-            value = new Operation(operator, value, value2);
+        if (currentTerminal.kind != OPERATOR) {
+            return value;
         }
-        return value;
+
+        return parseOperation(value);
+    }
+
+    private Value parseOperation(Value firstTerm) {
+        Value res = parseOperation1(firstTerm);
+        while (currentTerminal.isAddOperator()) {
+            Operator op = parseOperator();
+            Value tmp = parseOperation1(null);
+
+            res = new Operation(op, res, tmp);
+        }
+
+        return res;
+    }
+
+    private Value parseOperation1(Value firstTerm) {
+        Value res = firstTerm != null ? firstTerm : parseSingleTermValue();
+        while (currentTerminal.isMulOperator()) {
+            Operator op = parseOperator();
+            Value tmp = parseSingleTermValue();
+
+            res = new Operation( op, res, tmp );
+        }
+
+        return res;
     }
 
     private Operator parseOperator() {

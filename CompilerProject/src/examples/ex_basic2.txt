@@ -1,0 +1,6 @@
+num a = 3;
+if a > 2
+then
+    show(a);
+else
+    show(2);

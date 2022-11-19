@@ -221,7 +221,7 @@ public class ParserAST {
         Identifier identifier = parseIdentifier();
         accept(RIGHT_PARAN);
         accept(SEMICOLON);
-        return new ShowStatement(identifier);
+        return new ShowStatement(new VarValue(identifier));
     }
 
     private FunctionCall parseFunctionCall(Identifier identifier) {
