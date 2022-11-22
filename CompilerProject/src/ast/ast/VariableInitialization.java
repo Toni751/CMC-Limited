@@ -2,8 +2,7 @@ package ast.ast;
 
 import checker.Visitor;
 
-public class VariableInitialization extends Declaration {
-    public Type type;
+public class VariableInitialization extends InitializedDeclaration {
     public Value value;
     public ValueList valueList;
 

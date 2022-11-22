@@ -88,7 +88,7 @@ public class Scanner {
                 return ASSIGNMENT;
             case '!':
                 takeIt();
-                if (currentChar == '=') {
+                if (currentChar != '=') {
                     return ERROR;
                 }
                 takeIt();
@@ -97,6 +97,7 @@ public class Scanner {
             case '-':
             case '*':
             case '/':
+            case '|':
                 takeIt();
                 return OPERATOR;
             case ':':

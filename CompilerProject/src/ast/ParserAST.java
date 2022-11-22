@@ -110,11 +110,11 @@ public class ParserAST {
         return variableList;
     }
 
-    private Variable parseVar() {
+    private VariableDeclaration parseVar() {
         if (types.contains(currentTerminal.kind)) {
             Type type = parseType();
             Identifier identifier = parseIdentifier();
-            return new Variable(type, identifier);
+            return new VariableDeclaration(identifier, type);
         }
         System.out.println("Expected num, char or array but found " + currentTerminal.kind);
         return null;

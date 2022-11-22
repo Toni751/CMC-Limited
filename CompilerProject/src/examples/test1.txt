@@ -1,0 +1,42 @@
+#Define all variables
+num a = 2*3+2;
+num b = 5/5*8;
+num c;
+num e = 789654;
+num f = 1;
+char h = 'T';
+
+#Define your function
+define myFunc with num x, num y, char d:
+	if x != y 
+		then d = 'F';
+		else d = 'T';
+	done;
+	
+	if d == 'F'
+		then if x < y
+			then do 
+				x  = x + 1;
+				until x == y;
+			else do
+				y = y + 1;
+				until x == y;
+			done;
+	done;
+bye;
+
+# myFunc(params: 8, 2, h);
+
+if a <= b
+	then c = a;
+	else c = 0;
+done;
+
+#Show all the variables
+show(a);
+show(b);
+show(c);
+show(e);
+show(f);
+show(h);
+		

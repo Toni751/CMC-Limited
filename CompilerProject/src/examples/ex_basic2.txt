@@ -1,6 +1,13 @@
-num a = 3;
-if a > 2
-then
+num a = 5;
+num b = 3;
+do
     show(a);
-else
-    show(2);
+    show(b);
+    if b > 1
+    then
+        b = b - 2;
+        a = a - 3;
+    else
+        a = a - 1;
+    done;
+until a == 0;

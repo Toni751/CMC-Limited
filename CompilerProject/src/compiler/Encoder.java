@@ -4,10 +4,10 @@ import ast.ast.*;
 import ast.ast.Character;
 import ast.ast.Number;
 import checker.Visitor;
+import scanner.TokenKind;
 import tam.Instruction;
 import tam.Machine;
 
-import javax.crypto.Mac;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 
@@ -70,9 +70,12 @@ public class Encoder implements Visitor {
     public Object visitProgram(Program p, Object arg) {
         currentLevel = 0;
 
+        int before = nextAdr;
+        emit(Machine.JUMPop, 0, Machine.CB, 0);
         for (int i = 0; i < p.functions.size(); i++) {
             p.functions.get(i).visit(this, new Address(currentLevel, 0));
         }
+        patch(before, nextAdr);
         p.block.visit(this, new Address());
 
         emit(Machine.HALTop, 0, 0, 0);
@@ -105,7 +108,7 @@ public class Encoder implements Visitor {
     public Object visitVarList(VariableList v, Object arg) {
         int startDisplacement = ((Address) arg).displacement;
 
-        for (Variable var: v.variables) {
+        for (VariableDeclaration var: v.variables) {
             arg = var.visit(this, arg);
         }
 
@@ -113,15 +116,10 @@ public class Encoder implements Visitor {
     }
 
     @Override
-    public Object visitVariable(Variable v, Object arg) {
-        v.address = (Address) arg;
-        return new Address((Address) arg, 1);
-    }
-
-    @Override
     public Object visitBlock(Block b, Object arg) {
         for (BlockItem item: b.blockItems) {
-            item.visit(this, arg);
+            Object newArg = item.visit(this, arg);
+            arg = newArg != null ? newArg : arg;
         }
 
         return null;
@@ -148,7 +146,33 @@ public class Encoder implements Visitor {
 
     @Override
     public Object visitComparison(Comparison c, Object arg) {
-        // this should be the same as binary expression?
+        String comp = (String) c.comparator.visit(this, null);
+        c.operand1.visit(this, arg);
+        c.operand2.visit(this, arg);
+
+        int displacement = 0;
+        switch (comp){
+            case ">":
+                displacement = Machine.gtDisplacement;
+                break;
+            case ">=":
+                displacement = Machine.geDisplacement;
+                break;
+            case "<":
+                displacement = Machine.ltDisplacement;
+                break;
+            case "<=":
+                displacement = Machine.leDisplacement;
+                break;
+            case "==":
+                displacement = Machine.eqDisplacement;
+                break;
+            case "!=":
+                displacement = Machine.neDisplacement;
+                break;
+        }
+
+        emit(Machine.CALLop, 0, Machine.PBr, displacement);
         return null;
     }
 
@@ -187,20 +211,54 @@ public class Encoder implements Visitor {
     public Object visitShowStatement(ShowStatement s, Object arg) {
         s.value.visit(this, arg);
 
-        emit(Machine.CALLop, 0, Machine.PBr, Machine.putintDisplacement);
+        String spelling = getVarValueDeclarationType(s.value);
+        if (TokenKind.NUM.getSpelling().equals(spelling)) {
+            emit(Machine.CALLop, 0, Machine.PBr, Machine.putintDisplacement);
+        } else if (TokenKind.CHAR.getSpelling().equals(spelling)) {
+            emit(Machine.CALLop, 0, Machine.PBr, Machine.putDisplacement);
+        } else if (TokenKind.NUM_ARR.getSpelling().equals(spelling)) {
+            int size = ((VariableInitialization) s.value.declaration).valueList.values.size();
+            emit(Machine.CALLop, size, Machine.PBr, Machine.putIntArrayDisplacement);
+        } else if (TokenKind.CHAR_ARR.getSpelling().equals(spelling)) {
+            ValueList valueList = ((VariableInitialization) s.value.declaration).valueList;
+            int size = valueList != null ? valueList.values.size() : 2; // the 2 comes from the merge operation
+            emit(Machine.CALLop, size, Machine.PBr, Machine.putCharArrayDisplacement);
+        }
         emit(Machine.CALLop, 0, Machine.PBr, Machine.puteolDisplacement);
 
         return null;
     }
 
+    private String getVarValueDeclarationType(VarValue value) {
+        return value.declaration.type != null ? value.declaration.type.spelling : ((InitializedDeclaration) value.declaration).vd.type.spelling;
+    }
+
     @Override
     public Object visitReadCharDeclaration(ReadCharDeclaration r, Object arg) {
-        return null;
+        if (r.type != null) {
+            r.vd.visit(this, arg);
+        }
+
+        emit(Machine.PUSHop, 0, 0, 1);
+        int register = displayRegister(currentLevel, r.vd.address.level);
+        emit(Machine.CALLop, 0, Machine.PBr, Machine.getDisplacement);
+        emit(Machine.STOREop, 1, register, r.vd.address.displacement);
+
+        return new Address(r.vd.address, 1);
     }
 
     @Override
     public Object visitReadNumDeclaration(ReadNumDeclaration r, Object arg) {
-        return null;
+        if (r.type != null) {
+            r.vd.visit(this, arg);
+        }
+
+        emit(Machine.PUSHop, 0, 0, 1);
+        int register = displayRegister(currentLevel, r.vd.address.level);
+        emit(Machine.CALLop, 0, Machine.PBr, Machine.getintDisplacement);
+        emit(Machine.STOREop, 1, register, r.vd.address.displacement);
+
+        return new Address(r.vd.address, 1);
     }
 
     @Override
@@ -212,17 +270,29 @@ public class Encoder implements Visitor {
     @Override
     public Object visitVariableInitialization(VariableInitialization v, Object arg) {
         if (v.type != null) {
-            v.address = (Address) arg;
-            return new Address((Address) arg, 1);
-        } else {
-            Address adr = v.address;
-            v.value.visit(this, arg);
-
-            int register = displayRegister(currentLevel, adr.level);
-            emit(Machine.STOREop, 1, register, adr.displacement);
-//            emit(Machine.LOADop, 1, register, adr.displacement);
+            v.vd.visit(this, arg);
         }
-        return null;
+
+        if (v.valueList != null) {
+            int arraySize = v.valueList.values.size();
+            emit(Machine.PUSHop, 0, 0, arraySize);
+
+            for (int i = arraySize - 1; i >= 0; i--) {
+                v.valueList.values.get(i).visit(this, arg);
+            }
+
+            emit(Machine.STOREop, arraySize, displayRegister(currentLevel, v.vd.address.level), v.vd.address.displacement);
+            return new Address(v.vd.address, arraySize);
+        }
+
+        emit(Machine.PUSHop, 0, 0, 1);
+        v.value.visit(this, arg);
+
+        int register = displayRegister(currentLevel, v.vd.address.level);
+        emit(Machine.STOREop, 1, register, v.vd.address.displacement);
+        // emit(Machine.LOADop, 1, register, v.vd.address.displacement);
+
+        return new Address(v.vd.address, 1);
     }
 
     @Override
@@ -249,6 +319,9 @@ public class Encoder implements Visitor {
                 break;
             case "/":
                 displacement = Machine.divDisplacement;
+                break;
+            case "|":
+                displacement = Machine.mergeDisplacement;
                 break;
         }
 
@@ -278,17 +351,35 @@ public class Encoder implements Visitor {
 
     @Override
     public Object visitNumberValue(NumberValue n, Object arg) {
-        return Integer.valueOf(n.number.spelling);
+        int number = (int) n.number.visit(this, null);
+        emit(Machine.LOADLop, 1, 0, number);
+        return null;
     }
 
     @Override
     public Object visitCharacterValue(CharacterValue c, Object arg) {
-        return c.character.spelling.charAt(0);
+        char character = (char) c.character.visit(this, null);
+        emit(Machine.LOADLop, 1, 0, character);
+        return null;
     }
 
     @Override
     public Object visitVarValue(VarValue v, Object arg) {
-        Address address = v.declaration.address;
+        Address address;
+        if (v.declaration instanceof VariableDeclaration) {
+            address = ((VariableDeclaration) v.declaration).address;
+        } else {
+            address = ((InitializedDeclaration) v.declaration).vd.address;
+        }
+
+        if (v.declaration instanceof VariableInitialization && ((VariableInitialization) v.declaration).valueList != null) {
+            int size = ((VariableInitialization) v.declaration).valueList.values.size();
+            int register = displayRegister(currentLevel, address.level);
+            emit(Machine.LOADop, size, register, address.displacement);
+
+            return null;
+        }
+
         int register = displayRegister(currentLevel, address.level);
         emit(Machine.LOADop, 1, register, address.displacement);
 

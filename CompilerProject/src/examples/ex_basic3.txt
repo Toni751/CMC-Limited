@@ -1,0 +1,15 @@
+num a = 3;
+num b = 7;
+
+define myFunc with num x:
+    num y = 12;
+    if x > 3
+    then
+        x = x + 1;
+        show(x);
+    else
+        show(y);
+    done;
+bye;
+
+myFunc(params: a);

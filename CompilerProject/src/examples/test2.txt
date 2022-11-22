@@ -1,0 +1,21 @@
+#Initialising variables
+num a = 2;
+num b = 3;
+num c = 5;
+
+numArr arr1 = [a, b, c];
+numArr arr2 = [5, 3, 2];
+
+charArr true = ['T', 'r', 'u', 'e'];
+charArr false = ['F', 'a', 'l', 's', 'e'];
+
+if a + b == c
+	then show(true);
+	else show(false);
+done;
+
+show(a);
+show(b);
+show(c);
+show(arr1);
+show(arr2);

@@ -45,16 +45,9 @@ public class Checker implements Visitor {
 
     @Override
     public Object visitVarList(VariableList v, Object arg) {
-        for (Variable var : v.variables) {
+        for (VariableDeclaration var : v.variables) {
             var.visit(this, null);
         }
-        return null;
-    }
-
-    @Override
-    public Object visitVariable(Variable v, Object arg) {
-        String id = (String) v.id.visit(this, null);
-        idTable.enter(id, new VariableDeclaration(v.id, v.type));
         return null;
     }
 
@@ -90,7 +83,11 @@ public class Checker implements Visitor {
         boolean isInt = false;
         String numSpelling = TokenKind.NUM.getSpelling();
         if (operand instanceof VariableInitialization) {
-            isInt = numSpelling.equals(((VariableInitialization) operand).type.spelling);
+            Type type = ((VariableInitialization) operand).type != null ? ((VariableInitialization) operand).type : ((VariableInitialization) operand).vd.type;
+            isInt = numSpelling.equals(type.spelling);
+        } else if (operand instanceof VariableDeclaration) {
+            Type type = ((VariableDeclaration) operand).type;
+            isInt = numSpelling.equals(type.spelling);
         }
 
         return operand instanceof Integer || operand instanceof ReadNumDeclaration || isInt || numSpelling.equals(operand);
@@ -100,7 +97,8 @@ public class Checker implements Visitor {
         boolean isChar = false;
         String charSpelling = TokenKind.CHAR.getSpelling();
         if (operand instanceof VariableInitialization) {
-            isChar = charSpelling.equals(((VariableInitialization) operand).type.spelling);
+            Type type = ((VariableInitialization) operand).type != null ? ((VariableInitialization) operand).type : ((VariableInitialization) operand).vd.type;
+            isChar = charSpelling.equals(type.spelling);
         }
 
         return operand instanceof java.lang.Character || operand instanceof ReadCharDeclaration || isChar || charSpelling.equals(operand);
@@ -124,15 +122,11 @@ public class Checker implements Visitor {
             System.out.println("RULE 6: A variable name cannot be used as the function name in a function call.");
             return null;
         }
-        if (idTable.getScope() == 2 && id.equals(idTable.getLastFunctionId())) {
-            System.out.println("RULE 11: Cannot call a function recursively.");
-            return null;
-        }
 
         FunctionDeclaration fd = (FunctionDeclaration) retrieve;
         f.declaration = fd;
         List<Object> values = (List<Object>) f.valueList.visit(this, null);
-        List<Variable> variables = fd.varList.variables;
+        List<VariableDeclaration> variables = fd.varList.variables;
         if (variables.size() != values.size()) {
             System.out.println("RULE 10: The number of arguments in a function call must match the number of parameters given in a function definition");
         }
@@ -171,7 +165,7 @@ public class Checker implements Visitor {
 
     @Override
     public Object visitShowStatement(ShowStatement s, Object arg) {
-        String id = (String) s.value.visit(this, null);
+        String id = (String) s.value.name.visit(this, null);
         if (getVarValueIdentifierDeclaration(id) != null) {
             return s.value.visit(this, null);
         } else {
@@ -185,15 +179,19 @@ public class Checker implements Visitor {
         String id = (String) r.identifier.visit(this, null);
         if (r.type != null) {
             idTable.enter(id, r);
+            r.vd = new VariableDeclaration(r.identifier, r.type);
         } else {
             Object declaration = idTable.retrieve(id);
             if (declaration == null || declaration instanceof FunctionDeclaration || declaration instanceof ReadNumDeclaration) {
                 System.out.println("RULE 18: Unable to initialize non-char variable with readChar.");
             } else if (declaration instanceof ReadCharDeclaration) {
+                r.vd = ((ReadCharDeclaration) declaration).vd;
                 idTable.updateVariableDeclaration(id, r);
             } else if (declaration instanceof VariableDeclaration) {
+                r.vd = ((VariableDeclaration) declaration);
                 validatePreviousDeclaration(TokenKind.CHAR, ((VariableDeclaration) declaration).type, id, r);
             } else if (declaration instanceof VariableInitialization) {
+                r.vd = ((VariableInitialization) declaration).vd;
                 validatePreviousDeclaration(TokenKind.CHAR, ((VariableInitialization) declaration).type, id, r);
             }
         }
@@ -205,15 +203,19 @@ public class Checker implements Visitor {
         String id = (String) r.identifier.visit(this, null);
         if (r.type != null) {
             idTable.enter(id, r);
+            r.vd = new VariableDeclaration(r.identifier, r.type);
         } else {
             Object declaration = idTable.retrieve(id);
             if (declaration == null || declaration instanceof FunctionDeclaration || declaration instanceof ReadCharDeclaration) {
                 System.out.println("RULE 19: Unable to initialize non-number variable with readNum.");
             } else if (declaration instanceof ReadNumDeclaration) {
+                r.vd = ((ReadNumDeclaration) declaration).vd;
                 idTable.updateVariableDeclaration(id, r);
             } else if (declaration instanceof VariableDeclaration) {
+                r.vd = ((VariableDeclaration) declaration);
                 validatePreviousDeclaration(TokenKind.NUM, ((VariableDeclaration) declaration).type, id, r);
             } else if (declaration instanceof VariableInitialization) {
+                r.vd = ((VariableInitialization) declaration).vd;
                 validatePreviousDeclaration(TokenKind.NUM, ((VariableInitialization) declaration).type, id, r);
             }
         }
@@ -247,6 +249,7 @@ public class Checker implements Visitor {
         if (v.type != null) {
             String newValueType = findInitializationValueType(v);
             if (v.type.spelling.equals(newValueType)) {
+                v.vd = new VariableDeclaration(v.identifier, v.type);
                 idTable.enter(id, v);
             } else {
                 System.out.println("The initial value type does not match with the new value type. Rules 16, 17, 18, 19.");
@@ -258,12 +261,20 @@ public class Checker implements Visitor {
             } else if (declaration instanceof FunctionDeclaration) {
                 System.out.println("RULE 7: A function name cannot be used as a variable.");
             } else if (declaration instanceof ReadNumDeclaration) {
+                // v.type = ((ReadNumDeclaration) declaration).type;
+                v.vd = ((ReadNumDeclaration) declaration).vd;
                 validateNewVariableValue(TokenKind.NUM.getSpelling(), id, v);
             } else if (declaration instanceof ReadCharDeclaration) {
+                // v.type = ((ReadCharDeclaration) declaration).type;
+                v.vd = ((ReadCharDeclaration) declaration).vd;
                 validateNewVariableValue(TokenKind.CHAR.getSpelling(), id, v);
             } else if (declaration instanceof VariableDeclaration) {
+                // v.type = ((VariableDeclaration) declaration).type;
+                v.vd = ((VariableDeclaration) declaration);
                 validateNewVariableValue(((VariableDeclaration) declaration).type.spelling, id, v);
             } else if (declaration instanceof VariableInitialization) {
+                // v.type = ((VariableInitialization) declaration).type;
+                v.vd = ((VariableInitialization) declaration).vd;
                 validateNewVariableValueInitializedBefore(v, id, (VariableInitialization) declaration);
             }
         }
@@ -307,6 +318,8 @@ public class Checker implements Visitor {
             if (isOperandChar(valueDeclaration)) {
                 return TokenKind.CHAR.getSpelling();
             }
+            // if we get here we must have a char merge
+            return TokenKind.CHAR_ARR.getSpelling();
         } else if (v.valueList != null){
             List<Object> values = (List<Object>) v.valueList.visit(this, null);
             if (isOperandInt(values.get(0))) {
@@ -331,11 +344,19 @@ public class Checker implements Visitor {
         String operator = (String) o.operator.visit(this, null);
         switch (operator) {
             case "+":
-                if ((isOperandInt(operand1) && isOperandInt(operand2)) || (isOperandChar(operand1) && isOperandChar(operand2))) {
-                    return (isOperandInt(operand1) && isOperandInt(operand2)) ? TokenKind.NUM.getSpelling() : TokenKind.CHAR.getSpelling();
+                if (isOperandInt(operand1) && isOperandInt(operand2)) {
+                    return TokenKind.NUM.getSpelling();
                 } else {
                     System.out.println("RULE 12: Addition can only be done on variables of the same simple type");
                 }
+                break;
+            case "|":
+                if (isOperandChar(operand1) && isOperandChar(operand2)) {
+                    return TokenKind.CHAR_ARR.getSpelling();
+                } else {
+                    System.out.println("RULE 12: Addition can only be done on variables of the same simple type");
+                }
+                break;
             case "-":
             case "*":
             case "/":
@@ -344,6 +365,7 @@ public class Checker implements Visitor {
                 } else {
                     System.out.println("RULE 13: -, *, / can only be used between 2 number operands");
                 }
+                break;
         }
         return null;
     }
@@ -389,11 +411,11 @@ public class Checker implements Visitor {
     private Object getVarValueIdentifierDeclaration(String id) {
         Object idEntryDeclaration = idTable.retrieve(id);
         if (idEntryDeclaration == null) {
-            System.out.println("RULE 4: A variable must be defined before it is used in a Comparison or Operation");
+            System.out.println("RULE 4: A variable must be defined before it is used in a Comparison, Show Statement or Operation");
         } else if (idEntryDeclaration instanceof FunctionDeclaration) {
             System.out.println("RULE 14: A function cannot be used in a Comparison or Operation");
             System.out.println("RULE 7: A function cannot be used as a variable.");
-        } else if (idEntryDeclaration instanceof VariableDeclaration) {
+        } else if (idEntryDeclaration instanceof VariableDeclaration && idTable.getScope() == 0) {
             System.out.println("RULE 15: A variable must be initialized before it is used in a Comparison or Operation");
         } else {
             return idEntryDeclaration;

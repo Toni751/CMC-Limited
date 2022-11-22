@@ -1,0 +1,25 @@
+num a;
+num b;
+
+
+define myFunc with num x, num y:
+	show(x);
+	show(y);
+
+	num rest = 0;
+	num mul = 0;
+	do mul = mul + 1;
+	until x * mul < y;
+	
+	if x * mul != y
+		then rest = y - x*mul;
+	
+	show(x);
+	show(y);
+	show(mul);
+	show(rest);
+bye;
+
+a = 3;
+b = 29;
+myFunc(params: a, b);

@@ -1,0 +1,10 @@
+num a = 3;
+num b = readNum();
+
+char c = 'A';
+char d = readChar();
+
+show(a)
+show(b)
+show(c)
+show(d)

@@ -9,7 +9,6 @@ public interface Visitor {
     Object visitFunction(FunctionDeclaration f, Object arg);
     Object visitIdentifier(Identifier i, Object arg);
     Object visitVarList(VariableList v, Object arg);
-    Object visitVariable(Variable v, Object arg);
     Object visitBlock(Block b, Object arg);
     Object visitIfStatement(IfStatement i, Object arg);
     Object visitComparison(Comparison c, Object arg);

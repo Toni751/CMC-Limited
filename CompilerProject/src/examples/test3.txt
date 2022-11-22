@@ -1,0 +1,12 @@
+#Initialise variable
+num a = 1;
+
+#Function
+define recFunc with num x:
+	if x <= 5
+		then show(x);   
+			recFunc(params: x+1);
+		done;
+bye;
+
+recFunc(params: a);

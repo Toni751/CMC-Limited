@@ -250,6 +250,7 @@ public class Interpreter {
         int temp = 0;
         int sign = 1;
 
+        System.out.print("Enter number > ");
         do {
             currentChar = System.in.read();
         } while (Character.isWhitespace((char) currentChar));
@@ -269,7 +270,7 @@ public class Interpreter {
         return sign * temp;
     }
 
-    static void callPrimitive (int primitiveDisplacement) {
+    static void callPrimitive (int primitiveDisplacement, int arraySize) {
         // Invokes the given primitive routine.
 
         int addr, size;
@@ -302,6 +303,8 @@ public class Interpreter {
                 ST = ST - 1;
                 accumulator = data[ST - 1];
                 data[ST - 1] = overflowChecked(accumulator + data[ST]);
+                break;
+            case Machine.mergeDisplacement:
                 break;
             case Machine.subDisplacement:
                 ST = ST - 1;
@@ -347,13 +350,13 @@ public class Interpreter {
                 break;
             case Machine.eqDisplacement:
                 size = data[ST - 1]; // size of each comparand
-                ST = ST - 2 * size;
-                data[ST - 1] = toInt(equal(size, ST - 1, ST - 1 + size));
+                ST = ST - 1;
+                data[ST - 1] = toInt(data[ST - 1] == data[ST]);
                 break;
             case Machine.neDisplacement:
                 size = data[ST - 1]; // size of each comparand
-                ST = ST - 2 * size;
-                data[ST - 1] = toInt(! equal(size, ST - 1, ST - 1 + size));
+                ST = ST - 1;
+                data[ST - 1] = toInt(data[ST - 1] != data[ST]);
                 break;
             case Machine.eolDisplacement:
                 data[ST] = toInt(currentChar == '\n');
@@ -364,19 +367,38 @@ public class Interpreter {
                 ST = ST + 1;
                 break;
             case Machine.getDisplacement:
-                ST = ST - 1;
-                addr = data[ST];
-                try {
+               try {
+                    System.out.print("Enter char > ");
                     currentChar = System.in.read();
                 } catch (java.io.IOException s) {
                     status = failedIOError;
                 }
-                data[addr] = (int) currentChar;
+                data[ST] = (int) currentChar;
+                ST = ST + 1;
                 break;
             case Machine.putDisplacement:
                 ST = ST - 1;
                 ch = (char) data[ST];
                 System.out.print(ch);
+                break;
+            case Machine.putIntArrayDisplacement:
+                for (int i = 0; i < arraySize; i++) {
+                    ST = ST - 1;
+                    accumulator = data[ST];
+                    System.out.print(accumulator);
+                    if (i != arraySize - 1) {
+                        System.out.print(", ");
+                    }
+                }
+                break;
+            case Machine.putCharArrayDisplacement:
+                String chars = "";
+                for (int i = 0; i < arraySize; i++) {
+                    ST = ST - 1;
+                    ch = (char) data[ST];
+                    chars = ch + chars;
+                }
+                System.out.print(chars);
                 break;
             case Machine.geteolDisplacement:
                 try {
@@ -389,14 +411,13 @@ public class Interpreter {
                 System.out.println ("");
                 break;
             case Machine.getintDisplacement:
-                ST = ST - 1;
-                addr = data[ST];
                 try {
                     accumulator = readInt();
                 } catch (java.io.IOException s) {
                     status = failedIOError;
                 }
-                data[addr] = (int) accumulator;
+                data[ST] = (int) accumulator;
+                ST = ST + 1;
                 break;
             case Machine.putintDisplacement:
                 ST = ST - 1;
@@ -485,7 +506,7 @@ public class Interpreter {
                 case Machine.CALLop:
                     addr = d + content(r);
                     if (addr >= Machine.PB) {
-                        callPrimitive(addr - Machine.PB);
+                        callPrimitive(addr - Machine.PB, n);
                         CP = CP + 1;
                     } else {
                         checkSpace(3);
@@ -504,7 +525,7 @@ public class Interpreter {
                     ST = ST - 2;
                     addr = data[ST + 1];
                     if (addr >= Machine.PB) {
-                        callPrimitive(addr - Machine.PB);
+                        callPrimitive(addr - Machine.PB, n);
                         CP = CP + 1;
                     } else {
                         // data[ST] = static link already
@@ -604,7 +625,7 @@ public class Interpreter {
         if (args.length == 1)
             objectName = args[0];
         else
-            objectName = "C:\\Users\\anton\\OneDrive\\Desktop\\Programs\\Semester 7\\CMC1\\prog8.tam";
+            objectName = "C:\\Users\\anton\\IdeaProjects\\CMC-Limited\\CompilerProject\\src\\examples\\ex_basic1.tam";
 
         loadObjectProgram(objectName);
         if (CT != CB) {

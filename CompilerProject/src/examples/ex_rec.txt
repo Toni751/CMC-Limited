@@ -1,0 +1,11 @@
+num a = 5;
+
+define myRec with num x:
+    if x >= 1
+    then
+        myRec(params: x-1);
+        show(x);
+    done;
+bye;
+
+myRec(params: a);

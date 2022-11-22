@@ -1,2 +1,19 @@
-num a = 3;
+num a = 2*3+2;
+num b = 5/5*8;
+num c;
+num e = 789654;
+num f = 1;
+char h = 'T';
+
+if a <= b
+	then c = a;
+	else c = 0;
+done;
+
+#Show all the variables
 show(a);
+show(b);
+show(c);
+show(e);
+show(f);
+show(h);

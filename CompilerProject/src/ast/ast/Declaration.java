@@ -7,9 +7,7 @@
 package ast.ast;
 
 
-import compiler.Address;
-
 public abstract class Declaration extends BlockItem {
+    public Type type;
     public Identifier identifier;
-    public Address address;
 }

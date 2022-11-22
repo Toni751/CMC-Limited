@@ -2,9 +2,7 @@ package ast.ast;
 
 import checker.Visitor;
 
-public class ReadCharDeclaration extends Declaration {
-    public Type type;
-
+public class ReadCharDeclaration extends InitializedDeclaration {
     public ReadCharDeclaration(Identifier identifier, Type type) {
         this.identifier = identifier;
         this.type = type;

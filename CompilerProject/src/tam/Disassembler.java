@@ -132,6 +132,9 @@ public class Disassembler {
             case Machine.addDisplacement:
                 System.out.print ("add     ");
                 break;
+            case Machine.mergeDisplacement:
+                System.out.print ("merge     ");
+                break;
             case Machine.subDisplacement:
                 System.out.print ("sub     ");
                 break;
@@ -173,6 +176,12 @@ public class Disassembler {
                 break;
             case Machine.putDisplacement:
                 System.out.print ("put     ");
+                break;
+            case Machine.putIntArrayDisplacement:
+                System.out.print ("putintarray     ");
+                break;
+            case Machine.putCharArrayDisplacement:
+                System.out.print ("putchararray     ");
                 break;
             case Machine.geteolDisplacement:
                 System.out.print ("geteol  ");
@@ -355,7 +364,7 @@ public class Disassembler {
         if (args.length == 1)
             objectName = args[0];
         else
-            objectName = "C:\\Users\\anton\\OneDrive\\Desktop\\Programs\\Semester 7\\CMC1\\prog1.tam";
+            objectName = "C:\\Users\\anton\\IdeaProjects\\CMC-Limited\\CompilerProject\\src\\examples\\ex_basic1.tam";
 
         loadObjectProgram(objectName);
         disassembleProgram();

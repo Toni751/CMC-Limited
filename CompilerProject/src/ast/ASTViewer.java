@@ -107,12 +107,8 @@ public class ASTViewer extends JFrame
                 node.add( createTree( d ) );
         } else if( ast instanceof VariableList ) {
 			node.setUserObject( "VariableList" );
-			for( Variable d: ((VariableList)ast).variables )
+			for( VariableDeclaration d: ((VariableList)ast).variables )
 				node.add( createTree( d ) );
-		} else if( ast instanceof Variable ) {
-			node.setUserObject( "Variable" );
-			node.add( createTree( ((Variable)ast).type ) );
-			node.add( createTree( ((Variable)ast).id ) );
 		} else if( ast instanceof Identifier ) {
 			node.setUserObject( "Identifier " + ((Identifier)ast).spelling );
 		} else if( ast instanceof CharacterValue ) {

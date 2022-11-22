@@ -1,9 +1,10 @@
 package ast.ast;
 
 import checker.Visitor;
+import compiler.Address;
 
 public class VariableDeclaration extends Declaration{
-    public Type type;
+    public Address address;
 
     public VariableDeclaration(Identifier identifier, Type type) {
         this.identifier = identifier;

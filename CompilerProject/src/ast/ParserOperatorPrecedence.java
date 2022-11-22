@@ -109,11 +109,11 @@ public class ParserOperatorPrecedence {
         return variableList;
     }
 
-    private Variable parseVar() {
+    private VariableDeclaration parseVar() {
         if (types.contains(currentTerminal.kind)) {
             Type type = parseType();
             Identifier identifier = parseIdentifier();
-            return new Variable(type, identifier);
+            return new VariableDeclaration(identifier, type);
         }
         System.out.println("Expected num, char or array but found " + currentTerminal.kind);
         return null;
@@ -325,14 +325,14 @@ public class ParserOperatorPrecedence {
                 return declaration;
             }
             accept(ASSIGNMENT);
-            if (currentVariableType.spelling.equals(CHAR_ARR.getSpelling())) {
-                accept(LEFT_SQUARE_PARAN);
-                declaration = new VariableInitialization(currentVariableType, parseCharArrDeclaration(), identifier1);
-            } else if (currentVariableType.spelling.equals(NUM_ARR.getSpelling())) {
+            if (values.contains(currentTerminal.kind)) {
+                declaration = new VariableInitialization(currentVariableType, parseValue(), identifier1);
+            }  else if (currentVariableType.spelling.equals(NUM_ARR.getSpelling())) {
                 accept(LEFT_SQUARE_PARAN);
                 declaration = new VariableInitialization(currentVariableType, parseNumArrDeclaration(), identifier1);
-            } else if (values.contains(currentTerminal.kind)) {
-                declaration = new VariableInitialization(currentVariableType, parseValue(), identifier1);
+            } else if (currentVariableType.spelling.equals(CHAR_ARR.getSpelling())) {
+                accept(LEFT_SQUARE_PARAN);
+                declaration = new VariableInitialization(currentVariableType, parseCharArrDeclaration(), identifier1);
             } else {
                 declaration = parseReadDeclaration(currentVariableType, identifier1);
             }

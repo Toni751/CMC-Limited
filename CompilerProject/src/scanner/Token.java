@@ -43,7 +43,7 @@ public class Token {
         return false;
     }
 
-    private static final String[] ADDOPS = {"+", "-"};
+    private static final String[] ADDOPS = {"+", "-", "|"};
 
     private static final String[] MULOPS = {"*", "/"};
 }

@@ -1,0 +1,11 @@
+num a = 2;
+num b = 1 + 2 * a + 5 
+
+charArr true = ['T', 'r', 'u', 'e'];
+charArr false = ['F', 'a', 'l', 's', 'e'];
+
+#result of b should be 10
+if b == 10
+	then show(true);
+	else show(false);
+done;
