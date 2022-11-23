@@ -239,6 +239,10 @@ public class Checker implements Visitor {
     public Object visitVariableDeclaration(VariableDeclaration v, Object arg) {
         String id = (String) v.identifier.visit(this, null);
         idTable.enter(id, v);
+        String type = v.type != null ? v.type.spelling : "";
+        if (TokenKind.NUM_ARR.getSpelling().equals(type) || TokenKind.CHAR_ARR.getSpelling().equals(type)) {
+            System.out.println("RULE 22: Arrays cannot only be declared, they must be initialised");
+        }
 
         return null;
     }
@@ -354,7 +358,7 @@ public class Checker implements Visitor {
                 if (isOperandChar(operand1) && isOperandChar(operand2)) {
                     return TokenKind.CHAR_ARR.getSpelling();
                 } else {
-                    System.out.println("RULE 12: Addition can only be done on variables of the same simple type");
+                    System.out.println("RULE 23: The merge operator ( | ) can only be used between 2 char operands");
                 }
                 break;
             case "-":
