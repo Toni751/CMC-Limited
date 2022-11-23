@@ -4,7 +4,7 @@ num b = readNum();
 char c = 'A';
 char d = readChar();
 
-show(a)
-show(b)
-show(c)
-show(d)
+show(a);
+show(b);
+show(c);
+show(d);

@@ -9,6 +9,8 @@ numArr arr2 = [5, 3, 2];
 charArr true = ['T', 'r', 'u', 'e'];
 charArr false = ['F', 'a', 'l', 's', 'e'];
 
+charArr merge = 'a' | 'b';
+
 if a + b == c
 	then show(true);
 	else show(false);
@@ -19,3 +21,4 @@ show(b);
 show(c);
 show(arr1);
 show(arr2);
+show(merge);

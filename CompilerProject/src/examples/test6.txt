@@ -9,11 +9,12 @@ define myFunc with num x, num y:
 	num rest = 0;
 	num mul = 0;
 	do mul = mul + 1;
-	until x * mul < y;
-	
+	until x * mul >= y;
+
 	if x * mul != y
 		then rest = y - x*mul;
-	
+	done;
+
 	show(x);
 	show(y);
 	show(mul);

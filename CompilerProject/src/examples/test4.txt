@@ -1,18 +1,18 @@
-char a = 'a'
-char b = 'A'
+char a = 'a';
+char b = 'A';
 
 charArr true = ['T', 'r', 'u', 'e'];
 charArr false = ['F', 'a', 'l', 's', 'e'];
 
 
-if a <= b:
+if a <= b
 	then show(true);
 	else show(false);
 done;
 
-a = 'A'
+a = 'A';
 
-if a <= b:
+if a <= b
 	then show(true);
 	else show(false);
 done;

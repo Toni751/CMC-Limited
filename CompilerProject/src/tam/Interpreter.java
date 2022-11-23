@@ -305,6 +305,9 @@ public class Interpreter {
                 data[ST - 1] = overflowChecked(accumulator + data[ST]);
                 break;
             case Machine.mergeDisplacement:
+                int temp = data[ST - 1];
+                data[ST - 1] = data[ST - 2];
+                data[ST - 2] = temp;
                 break;
             case Machine.subDisplacement:
                 ST = ST - 1;
@@ -392,13 +395,11 @@ public class Interpreter {
                 }
                 break;
             case Machine.putCharArrayDisplacement:
-                String chars = "";
                 for (int i = 0; i < arraySize; i++) {
                     ST = ST - 1;
                     ch = (char) data[ST];
-                    chars = ch + chars;
+                    System.out.print(ch);
                 }
-                System.out.print(chars);
                 break;
             case Machine.geteolDisplacement:
                 try {

@@ -1,21 +1,22 @@
 #Define all variables
+char h = 'T';
 num a = 2*3+2;
 num b = 5/5*8;
 num c;
 num e = 789654;
 num f = 1;
-char h = 'T';
 
 #Define your function
 define myFunc with num x, num y, char d:
-	if x != y 
+	if x != y
 		then d = 'F';
 		else d = 'T';
 	done;
-	
+	show(d);
+
 	if d == 'F'
 		then if x < y
-			then do 
+			then do
 				x  = x + 1;
 				until x == y;
 			else do
@@ -23,9 +24,11 @@ define myFunc with num x, num y, char d:
 				until x == y;
 			done;
 	done;
+	show(x);
+	show(y);
 bye;
 
-# myFunc(params: 8, 2, h);
+myFunc(params: 9, 2, h);
 
 if a <= b
 	then c = a;
@@ -33,10 +36,9 @@ if a <= b
 done;
 
 #Show all the variables
+show(h);
 show(a);
 show(b);
 show(c);
 show(e);
 show(f);
-show(h);
-		

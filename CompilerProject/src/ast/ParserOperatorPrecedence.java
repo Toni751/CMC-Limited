@@ -370,10 +370,10 @@ public class ParserOperatorPrecedence {
 
     private ValueList parseNumArrDeclaration() {
         ValueList valueList = new ValueList();
-        valueList.values.add(parseNumber());
+        valueList.values.add(parseSingleTermValue());
         while (currentTerminal.kind == COMMA) {
             accept(COMMA);
-            valueList.values.add(parseNumber());
+            valueList.values.add(parseSingleTermValue());
         }
         accept(RIGHT_SQUARE_PARAN);
         return valueList;
@@ -381,10 +381,10 @@ public class ParserOperatorPrecedence {
 
     private ValueList parseCharArrDeclaration() {
         ValueList valueList = new ValueList();
-        valueList.values.add(parseCharacter());
+        valueList.values.add(parseSingleTermValue());
         while (currentTerminal.kind == COMMA) {
             accept(COMMA);
-            valueList.values.add(parseCharacter());
+            valueList.values.add(parseSingleTermValue());
         }
         accept(RIGHT_SQUARE_PARAN);
         return valueList;

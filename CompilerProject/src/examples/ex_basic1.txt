@@ -1,19 +1,10 @@
-num a = 2*3+2;
-num b = 5/5*8;
-num c;
-num e = 789654;
-num f = 1;
-char h = 'T';
+num a = 3;
+num b = readNum();
 
-if a <= b
-	then c = a;
-	else c = 0;
-done;
+char c = 'A';
+char d = readChar();
 
-#Show all the variables
 show(a);
 show(b);
 show(c);
-show(e);
-show(f);
-show(h);
+show(d);

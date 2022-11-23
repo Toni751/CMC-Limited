@@ -1,5 +1,5 @@
 num a = 2;
-num b = 1 + 2 * a + 5 
+num b = 1 + 2 * a + 5;
 
 charArr true = ['T', 'r', 'u', 'e'];
 charArr false = ['F', 'a', 'l', 's', 'e'];
