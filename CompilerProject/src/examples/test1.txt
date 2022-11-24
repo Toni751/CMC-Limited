@@ -3,7 +3,7 @@ char h = 'T';
 num a = 2*3+2;
 num b = 5/5*8;
 num c;
-num e = 789654;
+num e = 7896;
 num f = 1;
 
 #Define your function
